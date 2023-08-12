@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var _a, _b, _c;
+var _a;
 var listAviary = [];
 var NeverError = /** @class */ (function (_super) {
     __extends(NeverError, _super);
@@ -28,13 +28,14 @@ var Admin = /** @class */ (function () {
     Admin.prototype.doAction = function (action, animal, aviary) {
         switch (action) {
             case "CheckIn":
+                checkIn(animal, aviary);
                 return action;
             case "CheckOut":
                 checkOut(animal, aviary);
                 return action;
             case "CalculateAllFood":
                 return calculateAllFood(listAviary);
-                ;
+                ; //I wonder why it works without an optional function parameter pointer
             default:
                 throw new NeverError(action);
         }
@@ -71,27 +72,52 @@ function createAviary(biome, pondInStock, spaceInTotal) {
     listAviary.push(aviary);
     return aviary;
 }
-function check(animal, aviary) {
+function checPredatorsTypeInAviary(aviary) {
+    var animals = aviary.animals;
+    if (aviary.animals !== undefined) {
+        return animals[0].type;
+    }
+    else
+        return true;
+}
+function checkThePossibility(animal, aviary) {
     var _a;
     var aviaryNumber = listAviary.indexOf(aviary);
-    console.log("are you trying to settle animal - ".concat(animal.name, " in the aviary - N").concat(aviaryNumber, " - ").concat(aviary.biome));
-    if (animal.type.biome === aviary.biome) {
+    console.log("#####################################################");
+    console.log("## are you trying to settle animal - ".concat(animal.name, " in the aviary - N").concat(aviaryNumber, " - ").concat(aviary.biome, " ##"));
+    console.log("#####################################################");
+    if ((_a = aviary.animals) === null || _a === void 0 ? void 0 : _a.some(function (x) { return x == animal; })) { // I did not do the implementation of the search in the list of aviary
+        console.log("the animal - ".concat(animal.name, " already living in the aviary - N").concat(aviaryNumber, " - ").concat(aviary.biome));
+        return false;
+    }
+    if (aviary.spaceAvailable <= animal.spaceDemand) {
+        console.log("space demand animal - ".concat(animal.name, " more than space available of the aviary - N").concat(aviaryNumber, " = ").concat(aviary.spaceAvailable));
+        return false;
+    }
+    if (animal.type.biome !== aviary.biome) {
         console.log("the biom - ".concat(animal.type.biome, " of the animal - ").concat(animal.name, " \n does not match biom of the aviary - N").concat(aviaryNumber, " - ").concat(aviary.biome));
+        return false;
     }
-    if (animal.type.pondDemand !== aviary.pondInStock) {
-        console.log("".concat(animal.type.pondDemand, " !== ").concat(aviary.pondInStock));
+    if (animal.type.pondDemand === true && aviary.pondInStock === false) {
+        console.log("the aviary - N".concat(aviaryNumber, " - ").concat(aviary.biome, " hase not pond. - ").concat(animal.name, " needs pond"));
+        return false;
     }
-    if ((_a = aviary.animals) === null || _a === void 0 ? void 0 : _a.some(function (x) { return x == animal; })) {
-        console.log("".concat(animal.name, " !== ").concat(aviary.pondInStock));
+    if (animal.type.isPredator === true && (aviary.animals[0].type !== animal.type)) {
+        console.log("predators cannot live with other types of predators");
+        console.log("in the aviary - N".concat(aviaryNumber, " - ").concat(aviary.biome, " already living ").concat(aviary.animals[0].type, " predators"));
+        return false;
     }
-    if (animal.spaceDemand <= aviary.spaceAvailable) {
-        console.log("space demand ".concat(animal.name, " <= space available ").concat(aviary.spaceAvailable));
+    else {
+        return true;
     }
 }
 function checkIn(animal, aviary) {
     var _a;
-    check(animal, aviary);
-    (_a = aviary.animals) === null || _a === void 0 ? void 0 : _a.push(animal);
+    if (checkThePossibility(animal, aviary)) {
+        aviary.spaceAvailable -= animal.spaceDemand;
+        (_a = aviary.animals) === null || _a === void 0 ? void 0 : _a.push(animal);
+        return aviary;
+    }
 }
 function checkOut(animal, aviary) {
     var _a, _b;
@@ -123,7 +149,7 @@ var catMasha = createAcceptedAnimal(cat, "Masha", 4, 2);
 var hippopotamusSerj = createAcceptedAnimal(hippopotamus, "Serj", 80, 20);
 var tropicsAviary = createAviary("Tropics", false, 600);
 var houseAviary = createAviary("House", false, 600);
-var tom = new Admin();
+var admin = new Admin();
 (_a = houseAviary.animals) === null || _a === void 0 ? void 0 : _a.push(dogSasa);
-(_b = houseAviary.animals) === null || _b === void 0 ? void 0 : _b.push(catMasha);
-(_c = tropicsAviary.animals) === null || _c === void 0 ? void 0 : _c.push(dogSasa);
+// houseAviary.animals?.push(catMasha);
+// tropicsAviary.animals?.push(dogSasa);
