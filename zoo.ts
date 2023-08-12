@@ -98,6 +98,14 @@ function createAviary(
         return aviary
     }
 
+function checkPredatorsTypeInAviary(aviary: Aviary) {
+    var animals = aviary.animals;
+    if(aviary.animals.length !== 0){
+        return animals[0].type;
+    }
+    else return true;
+}    
+
 function checkThePossibility(animal: AcceptedAnimal, aviary: Aviary): boolean {    
     var aviaryNumber: number = listAviary.indexOf(aviary);
 
@@ -105,26 +113,31 @@ function checkThePossibility(animal: AcceptedAnimal, aviary: Aviary): boolean {
     console.log(`## are you trying to settle animal - ${animal.name} in the aviary - N${aviaryNumber} - ${aviary.biome} ##`);
     console.log("#####################################################");
     
-    if(aviary.animals?.some(x=>x==animal)) { // I did not do the implementation of the search in the list of aviary
-        console.log(`the animal - ${animal.name} already living in the aviary - N${aviaryNumber} - ${aviary.biome}`);
-        return false;
-    }
-    if(aviary.spaceAvailable <= animal.spaceDemand){
-        console.log(`space demand animal - ${animal.name} more than space available of the aviary - N${aviaryNumber} = ${aviary.spaceAvailable}`);
-        return false;
-    }
-    if(animal.type.biome !== aviary.biome) {
-        console.log(`the biom - ${animal.type.biome} of the animal - ${animal.name} \n does not match biom of the aviary - N${aviaryNumber} - ${aviary.biome}`);
-        return false;
-    }
-    if(animal.type.pondDemand === true && aviary.pondInStock === false) {
-        console.log(`the aviary - N${aviaryNumber} - ${aviary.biome} hase not pond. - ${animal.name} needs pond`);
-        return false;
-    }
-    if(animal.type.isPredator === true && (aviary.animals[0].type !== animal.type)){
-        console.log(`predators cannot live with other types of predators`);
-        console.log(`in the aviary - N${aviaryNumber} - ${aviary.biome} already living ${aviary.animals[0].type} predators`);
-        return false;
+    if(aviary.animals.length !== 0){
+        if(aviary.animals?.some(x=>x==animal)) { // I did not do the implementation of the search in the list of aviary
+            console.log(`the animal - ${animal.name} already living in the aviary - N${aviaryNumber} - ${aviary.biome}`);
+            return false;
+        }
+        if(aviary.spaceAvailable <= animal.spaceDemand){
+            console.log(`space demand animal - ${animal.name} more than space available of the aviary - N${aviaryNumber} = ${aviary.spaceAvailable}`);
+            return false;
+        }
+        if(animal.type.biome !== aviary.biome) {
+            console.log(`the biom - ${animal.type.biome} of the animal - ${animal.name} \n does not match biom of the aviary - N${aviaryNumber} - ${aviary.biome}`);
+            return false;
+        }
+        if(animal.type.pondDemand === true && aviary.pondInStock === false) {
+            console.log(`the aviary - N${aviaryNumber} - ${aviary.biome} hase not pond. - ${animal.name} needs pond`);
+            return false;
+        }
+        if(animal.type.isPredator === true && (aviary.animals[0].type !== animal.type)){
+            console.log(`predators cannot live with other types of predators`);
+            console.log(`in the aviary - N${aviaryNumber} - ${aviary.biome} already living ${aviary.animals[0].type} predators`);
+            return false;
+        }
+        else{
+            return true;
+        }
     }
     else{
         return true;
@@ -169,15 +182,18 @@ const dog: AnimalType = createAnimalType("Dog", "House", false, true);
 const cat: AnimalType = createAnimalType("Cat", "House", false, true);
 const hippopotamus: AnimalType = createAnimalType("Hippopotamus", "Tropics", true, false);
 
-let dogSasa = createAcceptedAnimal(dog, "Sasa", 5, 3);    
+let dogSasa = createAcceptedAnimal(dog, "Sasa", 5, 3);
+let dogVova = createAcceptedAnimal(dog, "Vova", 5, 3);        
 let catMasha = createAcceptedAnimal(cat, "Masha", 4, 2);
 let hippopotamusSerj = createAcceptedAnimal(hippopotamus, "Serj", 80, 20);
 
 let tropicsAviary = createAviary("Tropics", false, 600);
-let houseAviary = createAviary("House", false, 600);
+let houseAviary = createAviary("House", false, 11);
 
 let admin = new Admin();
 
-houseAviary.animals?.push(dogSasa);
-houseAviary.animals?.push(catMasha);
+// admin.doAction("CheckIn", dogSasa, houseAviary);
+
+// houseAviary.animals?.push(dogSasa);
+// houseAviary.animals?.push(catMasha);
 // tropicsAviary.animals?.push(dogSasa);

@@ -13,7 +13,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var _a;
 var listAviary = [];
 var NeverError = /** @class */ (function (_super) {
     __extends(NeverError, _super);
@@ -72,9 +71,9 @@ function createAviary(biome, pondInStock, spaceInTotal) {
     listAviary.push(aviary);
     return aviary;
 }
-function checPredatorsTypeInAviary(aviary) {
+function checkPredatorsTypeInAviary(aviary) {
     var animals = aviary.animals;
-    if (aviary.animals !== undefined) {
+    if (aviary.animals.length !== 0) {
         return animals[0].type;
     }
     else
@@ -86,26 +85,37 @@ function checkThePossibility(animal, aviary) {
     console.log("#####################################################");
     console.log("## are you trying to settle animal - ".concat(animal.name, " in the aviary - N").concat(aviaryNumber, " - ").concat(aviary.biome, " ##"));
     console.log("#####################################################");
-    if ((_a = aviary.animals) === null || _a === void 0 ? void 0 : _a.some(function (x) { return x == animal; })) { // I did not do the implementation of the search in the list of aviary
-        console.log("the animal - ".concat(animal.name, " already living in the aviary - N").concat(aviaryNumber, " - ").concat(aviary.biome));
-        return false;
-    }
-    if (aviary.spaceAvailable <= animal.spaceDemand) {
-        console.log("space demand animal - ".concat(animal.name, " more than space available of the aviary - N").concat(aviaryNumber, " = ").concat(aviary.spaceAvailable));
-        return false;
-    }
-    if (animal.type.biome !== aviary.biome) {
-        console.log("the biom - ".concat(animal.type.biome, " of the animal - ").concat(animal.name, " \n does not match biom of the aviary - N").concat(aviaryNumber, " - ").concat(aviary.biome));
-        return false;
-    }
-    if (animal.type.pondDemand === true && aviary.pondInStock === false) {
-        console.log("the aviary - N".concat(aviaryNumber, " - ").concat(aviary.biome, " hase not pond. - ").concat(animal.name, " needs pond"));
-        return false;
-    }
-    if (animal.type.isPredator === true && (aviary.animals[0].type !== animal.type)) {
-        console.log("predators cannot live with other types of predators");
-        console.log("in the aviary - N".concat(aviaryNumber, " - ").concat(aviary.biome, " already living ").concat(aviary.animals[0].type, " predators"));
-        return false;
+    if (aviary.animals.length !== 0) {
+        if ((_a = aviary.animals) === null || _a === void 0 ? void 0 : _a.some(function (x) { return x == animal; })) { // I did not do the implementation of the search in the list of aviary
+            console.log("the animal - ".concat(animal.name, " already living in the aviary - N").concat(aviaryNumber, " - ").concat(aviary.biome));
+            return false;
+        }
+        if (aviary.spaceAvailable <= animal.spaceDemand) {
+            console.log("space demand animal - ".concat(animal.name, " more than space available of the aviary - N").concat(aviaryNumber, " = ").concat(aviary.spaceAvailable));
+            return false;
+        }
+        if (animal.type.biome !== aviary.biome) {
+            console.log("the biom - ".concat(animal.type.biome, " of the animal - ").concat(animal.name, " \n does not match biom of the aviary - N").concat(aviaryNumber, " - ").concat(aviary.biome));
+            return false;
+        }
+        if (animal.type.pondDemand === true && aviary.pondInStock === false) {
+            console.log("the aviary - N".concat(aviaryNumber, " - ").concat(aviary.biome, " hase not pond. - ").concat(animal.name, " needs pond"));
+            return false;
+        }
+        if (animal.type.isPredator === true && (aviary.animals[0].type !== animal.type)) {
+            // if(animal.type.isPredator === true && (checkPredatorsTypeInAviary(aviary) !== animal.type || checkPredatorsTypeInAviary(aviary) === true)){
+            // if(checkPredatorsTypeInAviary(aviary) !== animal.type){
+            console.log("predators cannot live with other types of predators");
+            console.log("in the aviary - N".concat(aviaryNumber, " - ").concat(aviary.biome, " already living ").concat(aviary.animals[0].type, " predators"));
+            return false;
+            // }
+            // else if(checkPredatorsTypeInAviary(aviary) === true){
+            //     return true;
+            // } 
+        }
+        else {
+            return true;
+        }
     }
     else {
         return true;
@@ -116,7 +126,10 @@ function checkIn(animal, aviary) {
     if (checkThePossibility(animal, aviary)) {
         aviary.spaceAvailable -= animal.spaceDemand;
         (_a = aviary.animals) === null || _a === void 0 ? void 0 : _a.push(animal);
-        return aviary;
+        return "the animal - ".concat(animal.name, " settled in the aviary - N").concat(listAviary.indexOf(aviary), ". \n Now - available space = ").concat(aviary.biome);
+    }
+    else {
+        return;
     }
 }
 function checkOut(animal, aviary) {
@@ -145,11 +158,13 @@ var dog = createAnimalType("Dog", "House", false, true);
 var cat = createAnimalType("Cat", "House", false, true);
 var hippopotamus = createAnimalType("Hippopotamus", "Tropics", true, false);
 var dogSasa = createAcceptedAnimal(dog, "Sasa", 5, 3);
+var dogVova = createAcceptedAnimal(dog, "Vova", 5, 3);
 var catMasha = createAcceptedAnimal(cat, "Masha", 4, 2);
 var hippopotamusSerj = createAcceptedAnimal(hippopotamus, "Serj", 80, 20);
 var tropicsAviary = createAviary("Tropics", false, 600);
 var houseAviary = createAviary("House", false, 600);
 var admin = new Admin();
-(_a = houseAviary.animals) === null || _a === void 0 ? void 0 : _a.push(dogSasa);
+// admin.doAction("CheckIn", dogSasa, houseAviary);
+// houseAviary.animals?.push(dogSasa);
 // houseAviary.animals?.push(catMasha);
 // tropicsAviary.animals?.push(dogSasa);
